@@ -20,6 +20,39 @@
 ##local 확인용
 # 기본 이미지 설정
 # Use the base image
+# FROM pytorch/torchserve:latest
+
+# # Switch to root user
+# USER root
+
+# # Set the working directory
+# WORKDIR /app
+
+# # Install libraries
+# RUN pip install fastapi uvicorn boto3 pandas
+
+# # Copy application files
+# COPY ./model/synchro-you-lstm-model.pt /app/synchro-you-lstm-model.pt
+# COPY inference.py /app/inference.py
+
+# # Copy SSL certificate files
+# COPY ./keys/private.key /app/private.key
+# COPY ./keys/certificate.crt /app/certificate.crt
+
+# # Change permissions of the certificate files
+# RUN chmod 644 /app/certificate.crt /app/private.key
+
+# # Switch back to the original user (if necessary)
+# # USER your_original_user
+
+# # Expose port 443
+# EXPOSE 80
+
+# # Run the FastAPI app with Uvicorn over HTTPS
+# CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/app/private.key", "--ssl-certfile", "/app/certificate.crt"]
+
+
+#HTTP
 FROM pytorch/torchserve:latest
 
 # Switch to root user
@@ -33,20 +66,11 @@ RUN pip install fastapi uvicorn boto3 pandas
 
 # Copy application files
 COPY ./model/synchro-you-lstm-model.pt /app/synchro-you-lstm-model.pt
+COPY ./data/anchor_embedding.npy /app/anchor_embedding.npy
 COPY inference.py /app/inference.py
 
-# Copy SSL certificate files
-COPY ./keys/private.key /app/private.key
-COPY ./keys/certificate.crt /app/certificate.crt
+# Expose port 8000 for HTTP
+EXPOSE 8000
 
-# Change permissions of the certificate files
-RUN chmod 644 /app/certificate.crt /app/private.key
-
-# Switch back to the original user (if necessary)
-# USER your_original_user
-
-# Expose port 443
-EXPOSE 443
-
-# Run the FastAPI app with Uvicorn over HTTPS
-CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/app/private.key", "--ssl-certfile", "/app/certificate.crt"]
+# Run the FastAPI app with Uvicorn over HTTP
+CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "80"]
