@@ -29,7 +29,7 @@ USER root
 WORKDIR /app
 
 # Install libraries
-RUN pip install fastapi uvicorn boto3
+RUN pip install fastapi uvicorn boto3 pandas
 
 # Copy application files
 COPY ./model/synchro-you-lstm-model.pt /app/synchro-you-lstm-model.pt
