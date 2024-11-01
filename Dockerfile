@@ -65,7 +65,7 @@ WORKDIR /app
 RUN pip install fastapi uvicorn boto3 pandas
 
 # Copy application files
-COPY ./model/synchro-you-lstm-model.pt /app/synchro-you-lstm-model.pt
+COPY ./model/traced_model_script_cpu.pt /app/traced_model_script_cpu.pt
 COPY ./data/anchor_embedding.npy /app/anchor_embedding.npy
 COPY inference.py /app/inference.py
 

@@ -9,11 +9,13 @@ app = FastAPI()
 
 # 모델 로드
 def load_scripted_model(model_path):
-    model = torch.jit.load(model_path, map_location="cpu")
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = torch.jit.load(model_path, map_location=device)  # 디바이스 지정
+    model.to(device)
     model.eval()
     return model
 
-model_path = 'synchro-you-lstm-model.pt'
+model_path = 'traced_model_script_cpu.pt'
 model = load_scripted_model(model_path)
 
 target_npy_path = '/app/anchor_embedding.npy'
