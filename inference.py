@@ -1,17 +1,50 @@
 import torch
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+import logging
+import time
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
+from starlette.middleware.base import BaseHTTPMiddleware
+
+# 로거 설정
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("request_logger")
 
 app = FastAPI()
+
+# 로그 미들웨어 정의
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # 요청이 들어온 시간 기록
+        start_time = time.time()
+
+        # 요청 정보 로깅
+        logger.info(f"Request: {request.method} {request.url} {request.headers}")
+
+        # 요청 처리
+        response = await call_next(request)
+
+        # 응답 시간 계산
+        process_time = time.time() - start_time
+
+        # 응답 정보 로깅
+        logger.info(
+            f"Completed in {process_time:.2f}s - Status Code: {response.status_code}"
+        )
+
+        return response
+
+# 미들웨어 추가
+app.add_middleware(LoggingMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # 필요에 따라 특정 도메인으로 제한 가능
-    allow_credentials=True,
+    # allow_origins=["https://d1jenddcoqhj9m.cloudfront.net/", "http://localhost:3000"],
+    allow_credentials=False,
     allow_methods=["*"],  # 모든 HTTP 메서드를 허용
     allow_headers=["*"],  # 모든 헤더를 허용
 )
@@ -137,3 +170,4 @@ async def health_check():
 @app.get("/")
 async def root():
     return {"message": "connected"}
+
