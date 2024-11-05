@@ -57,10 +57,12 @@ def load_scripted_model(model_path):
     model.eval()
     return model
 
-model_path = '/app/traced_model_script_cpu_full.pt'
+# model_path = 'traced_model_script_cpu.pt'
+model_path = './model/traced_model_script_cpu.pt'
 model = load_scripted_model(model_path)
 
-target_npy_path = '/app/embedding_vector_mp_full.npy'
+# target_npy_path = '/app/anchor_embedding.npy'
+target_npy_path = './data/anchor_embedding.npy'
 
 class PredictionRequest(BaseModel):
     user_pose_data: List[List[float]]
@@ -130,7 +132,7 @@ def calculate_similarity(vector1, vector2):
     vector1 = torch.tensor(vector1, dtype=torch.float32)
     vector2 = torch.tensor(vector2, dtype=torch.float32)
 
-    # # 텐서가 1차원인 경우 배치 차원을 추가하여 2차원으로 변환
+    # 텐서가 1차원인 경우 배치 차원을 추가하여 2차원으로 변환
     if vector1.dim() == 1:
         vector1 = vector1.unsqueeze(0)  # shape: [1, N]
     if vector2.dim() == 1:

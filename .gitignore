@@ -1,3 +1,4 @@
 # Ignore SSL certificate and key files
 *.crt
 *.key
+.idea
