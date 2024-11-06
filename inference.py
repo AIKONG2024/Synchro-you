@@ -58,11 +58,11 @@ def load_scripted_model(model_path):
     return model
 
 # model_path = 'traced_model_script_cpu.pt'
-model_path = './model/traced_model_script_cpu.pt'
+model_path = './model/traced_model_script_cpu_full.pt'
 model = load_scripted_model(model_path)
 
 # target_npy_path = '/app/anchor_embedding.npy'
-target_npy_path = './data/anchor_embedding.npy'
+target_npy_path = './data/embedding_vector_mp_full.npy'
 
 class PredictionRequest(BaseModel):
     user_pose_data: List[List[float]]
@@ -153,13 +153,14 @@ async def predict(request: PredictionRequest):
         
         # `user_pose_data` 임베딩
         user_emb = embedding(user_angles)
+        user_emb_sq = user_emb[0]
 
         # `target embedding` 파일 로드 및 특정 시점 추출
         target_emb = np.load(target_npy_path)
         target_emb_seq = target_emb[request.seq]  # n 시점에서의 target 임베딩 추출
 
         # 유사도 계산
-        similarity = calculate_similarity(user_emb, target_emb_seq)
+        similarity = calculate_similarity(user_emb_sq, target_emb_seq)
 
         return {"similarity": similarity}
 
