@@ -65,8 +65,8 @@ WORKDIR /app
 RUN pip install fastapi uvicorn boto3 pandas
 
 # Copy application files
-COPY ./model/traced_model_script_cpu.pt /app/traced_model_script_cpu.pt
-COPY ./data/anchor_embedding.npy /app/anchor_embedding.npy
+COPY ./model/traced_model_script_cpu_full.pt /app/traced_model_script_cpu_full.pt
+COPY ./data/embedding_vector_mp_full.npy /app/embedding_vector_mp_full.npy
 COPY inference.py /app/inference.py
 
 # Expose port 8000 for HTTP
