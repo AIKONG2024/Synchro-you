@@ -57,17 +57,14 @@ def load_scripted_model(model_path):
     model.eval()
     return model
 
-model_path = '/app/model/traced_model_script_cpu_full.pt'
+model_path = '/app/traced_model_script_cpu_full.pt'
 model = load_scripted_model(model_path)
 
-# target embedding getter
-def get_target(target:str):
-    return f'/app/embedding/{target}/embedding_vector_mp_full.npy'
+target_npy_path = '/app/embedding_vector_mp_full.npy'
 
 class PredictionRequest(BaseModel):
     user_pose_data: List[List[float]]
     seq: int
-    target: str
 
 # 각도를 계산할 신체 부위 쌍과 좌표 인덱스 정의
 angle = [['left_biceps', 'left_forearm'],
@@ -156,7 +153,6 @@ async def predict(request: PredictionRequest):
         user_emb = embedding(user_angles)
 
         # `target embedding` 파일 로드 및 특정 시점 추출
-        target_npy_path = get_target(request.target)
         target_emb = np.load(target_npy_path)
         target_emb_seq = target_emb[request.seq]  # n 시점에서의 target 임베딩 추출
 

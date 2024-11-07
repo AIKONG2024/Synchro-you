@@ -7,7 +7,9 @@ frame_size = 30
 user_pose_data_batches = []
 
 # 업로드된 파일을 로드
-file_path = 'data/landmarks_3d_pos2_infer.csv'
+# file_path = 'data/vector/bbikibbiki/landmarks_3d_pos2_infer.csv' #삐끼삐끼챌린지
+file_path = 'data/vector/maratanghuru/landmarks_3d_pos.csv' #마라탕후루챌린지
+
 data = pd.read_csv(file_path)
 
 # 필요한 열만 선택 (3D 좌표만 추출)
@@ -21,20 +23,22 @@ for i in range(0, len(pose_data), frame_size):
 
 # 테스트할 첫 번째 batch 준비
 user_pose_data_sample = user_pose_data_batches[0]
-seq = 1  # 비교할 target embedding의 시점
+seq = 0  # 비교할 target embedding의 시점
 
 # 요청을 보낼 URL 설정 (로컬 FastAPI 서버 가정)
-url = "http://nipa-model-alb-804249540.ap-northeast-2.elb.amazonaws.com/predict"
-# url = "http://localhost:8000/predict"
+# url = "http://nipa-model-alb-804249540.ap-northeast-2.elb.amazonaws.com/predict"
+url = "http://localhost:8000/predict"
 
 # 요청 payload 생성
 payload = {
     "user_pose_data": user_pose_data_sample,
-    "seq": seq
+    "seq": seq,
+    "target": "bbikibbiki"
 }
 
 # 테스트 요청 보내기
 try:
+    print(payload)
     response = requests.post(url, json=payload)
     response_data = response.json()
     print(response_data)
